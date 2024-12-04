@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   YOUR NAME / SECTION NUMBER
+ *   Nick Cwikla / COMP272-001
  *
  *   Note, additional comments provided throughout this source code
  *   is for educational purposes
@@ -103,8 +103,32 @@ public class Graph {
    */
   
   public int findRoot() {
-
-    // ADD YOUR CODE HERE - DO NOT FORGET TO ADD YOUR NAME/SECTION AT TOP OF FILE
-    return -1;
+   // Count the number of potential vertices roots that may be present.
+    int counter = 0;
+   // Variable for storing the index of the root.
+    int root = -1;
+   // Create an array to find the incoming edges for each vertex.
+    int[] incomingEdges = new int[numVertices];
+   // Gather the incoming edges for each vertex.
+    for (int i = 0; i < numVertices; i++) {
+      for (Integer dest : adjListArr[i]) {
+       // Increase the count for the destination vertex.
+        incomingEdges[dest]++;
+      }
+    }
+   // Check for vertices which have no incoming edges.
+    for (int i = 0; i < numVertices; i++) {
+     // When the vertex has no incoming edges
+      if (incomingEdges[i] == 0) {
+       // Increment the root vertex counter.
+        counter++;
+       // Make the current vertex the potential root.
+        root = i;
+      }
+    }
+   // If there is no root or multiple then return -1.
+    if (counter != 1) return -1;
+   // Return the root vertex value.
+    return vertexValues.get(root);
   } 
 }

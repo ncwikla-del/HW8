@@ -1,6 +1,6 @@
 /******************************************************************
  *
- *   ADD YOUR NAME / SECTION NUMBER HERE
+ *   Nick Cwikla / COMP272-001
  *
  *   This java file contains the problem solutions of canFinish and
  *   numGroups methods.
@@ -26,7 +26,7 @@ class ProblemSolutions {
      * in prerequisites. You want to avoid this embarrassment by making sure you define
      * a curriculum and exam schedule that can be completed.
      *
-     * You goal is to ensure that any student pursuing the certificate of 'master
+     * Your goal is to ensure that any student pursuing the certificate of 'master
      * programmer', can complete 'n' certification exams, each being specific to a
      * topic. Some exams have prerequisites of needing to take and pass earlier
      * certificate exams. You do not want to force any order of taking the exams, but
@@ -74,18 +74,49 @@ class ProblemSolutions {
 
     public boolean canFinish(int numExams, 
                              int[][] prerequisites) {
-      
         int numNodes = numExams;  // # of nodes in graph
-
         // Build directed graph's adjacency list
         ArrayList<Integer>[] adj = getAdjList(numExams, 
-                                        prerequisites); 
-
-        // ADD YOUR CODE HERE - ADD YOUR NAME / SECTION AT TOP OF FILE
-        return false;
-
+                                        prerequisites);
+       // Create a new array for the purpose of tracking prerequisites.
+        int[] edges = new int[numExams];
+       // Generate the prerequisites for every exam.
+        for (int i = 0; i < numExams; i++) {
+            for (int neighbor : adj[i]) {
+               // Increase the count for every prerequisite.
+                edges[neighbor]++;
+            }
+        }
+       // Set a queue for processing the exams which have no prerequisites.
+        Queue<Integer> queue = new LinkedList<>();
+       // Exams with no prerequisites are added to the queue.
+        for (int i = 0; i <numExams; i++) {
+            if (edges[i] == 0) {
+               // If there are no prerequisites add to the queue.
+                queue.add(i);
+            }
+        }
+       // Counter for tracking number of exams that have been processed.
+        int counter = 0;
+       // Process the exams.
+        while (!queue.isEmpty()) {
+           // Get the next exam that has no prerequisites.
+            int node = queue.poll();
+           // Increment the counter of exams which have been processed.
+            counter++;
+           // Lower the prerequisite counter and add to queue.
+            for (int neighbor : adj[node]) {
+               // Decrement the prerequisite count.
+                edges[neighbor]--;
+                if (edges[neighbor] == 0) {
+                   // Make an addition to the queue if no more prerequisites remain.
+                    queue.add(neighbor);
+                }
+            }
+        }
+       // Return true if all exams are able to be finished.
+        return counter == numExams;
     }
-
 
     /**
      * Method getAdjList
@@ -112,7 +143,6 @@ class ProblemSolutions {
         }
         return adj;
     }
-
 
     /*
      * Assignment Graphing - Number of groups.
@@ -189,10 +219,37 @@ class ProblemSolutions {
                 }
             }
         }
-
-        // YOUR CODE GOES HERE - you can add helper methods, you do not need
-        // to put all code in this method.
-        return -1;
+       // Create an array for tracking nodes which have been visited.
+        boolean[] visited = new boolean[numNodes];
+       // Create a counter for groups which are connected.
+        int groups = 0;
+       // Go through every node to count number of connected groups.
+        for (int node = 0; node < numNodes; node++) {
+           // If node has not been visited.
+            if (!visited[node]) {
+               // Group count is then incremented.
+                groups++;
+               // Do a DFS to mark all the connected nodes.
+                depthFirstSearch(node,graph, visited);
+            }
+        }
+       // Return the number of connected groups.
+        return groups;
     }
-
+     /*  Helper method that does a depth first search on the graph.
+      */
+    private void depthFirstSearch(int node, Map<Integer, List<Integer>> graph, boolean[] visited) {
+       // Start with the current node being marked as visited.
+        visited[node] = true;
+       // If the node has no neighbors, return.
+        if (!graph.containsKey(node)) return;
+       // Go through all the neighbors which are unvisited.
+        for (int neighbor : graph.get(node)) {
+           // If neighbor hasn't been visited.
+            if (!visited[neighbor]) {
+               // Recursively call the depth first search.
+                depthFirstSearch(neighbor, graph, visited);
+            }
+        }
+    }
 }
